@@ -78,18 +78,9 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       try {
         // Fetch from API or use local data
         let apiProducts: Product[] = [];
-
-        if (params.category === 'electronics') {
-          const response = await fetch('/api/electronics');
-          apiProducts = await response.json();
-        } else if (params.category === 'jewelery') {
-          const response = await fetch('/api/jewellery');
-          apiProducts = await response.json();
-        } else {
-          // For other categories, use local data
-          apiProducts = allLocalProducts.filter((product) => categoryConfig?.match(product.category));
-        }
-
+        apiProducts = allLocalProducts.filter(
+          (product) => product.category.toLowerCase() === params.category.toLowerCase()
+        );
         setProducts(apiProducts);
       } catch (error) {
         console.error('Error fetching products:', error);

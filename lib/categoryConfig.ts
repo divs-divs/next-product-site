@@ -13,9 +13,9 @@ export const homepageCategories: HomepageCategory[] = [
     match: (category) => /electronics|computer|audio|mobile|camera|gadget/i.test(category),
   },
   {
-    id: 'home-decor',
-    label: 'Home Decor',
-    query: 'home decor',
+    id: 'home',
+    label: 'Home',
+    query: 'home',
     match: (category) => /home|decor|furniture|kitchen|garden/i.test(category),
   },
   {
@@ -25,10 +25,10 @@ export const homepageCategories: HomepageCategory[] = [
     match: (category) => /jewelery|jewelry|watch|accessories/i.test(category),
   },
   {
-    id: 'fashion',
-    label: 'Fashion',
-    query: 'fashion',
-    match: (category) => /fashion|clothing|apparel|shoes|men|women/i.test(category),
+    id: 'Grocery',
+    label: 'Grocery',
+    query: 'Grocery',
+    match: (category) => /Grocery|apple|sweet|juice/i.test(category),
   },
 ];
 

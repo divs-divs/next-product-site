@@ -14,23 +14,24 @@ export default function Homepage() {
   // Category images mapping
   const categoryImages: { [key: string]: string } = {
     electronics: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop',
-    'home-decor': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&h=500&fit=crop',
+    home: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=500&h=500&fit=crop',
     jewelery: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&h=500&fit=crop',
-    fashion: 'https://images.unsplash.com/photo-1595777712802-446a5c4e0b0a?w=500&h=500&fit=crop',
+    Grocery: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop',
   };
 
   const allProducts = useMemo(() => [...largeData, ...smallData], []);
+
   const navLinks = useMemo(() => buildCategoryNavLinks(allProducts), [allProducts]);
+
+  const categories = [
+    { id: 'electronics', label: 'Electronics', path: 'electronics' },
+    { id: 'home', label: 'Home', path: 'home' },
+    { id: 'jewelery', label: 'Jewellery', path: 'jewelery' },
+    { id: 'Grocery', label: 'Grocery', path: 'Grocery' },
+  ];
 
   // Get featured products from each category
   const featuredProducts = useMemo(() => {
-    const categories = [
-      { id: 'electronics', label: 'Electronics', path: 'electronics' },
-      { id: 'home-decor', label: 'Home Decor', path: 'home-decor' },
-      { id: 'jewelery', label: 'Jewellery', path: 'jewelery' },
-      { id: 'fashion', label: 'Fashion', path: 'fashion' },
-    ];
-
     return categories
       .map((category, index) => {
         const categoryProducts = allProducts.filter(
@@ -79,14 +80,6 @@ export default function Homepage() {
 
           <div className='grid gap-6 sm:grid-cols-2 xl:grid-cols-4'>
             {featuredProducts.map((product: any) => {
-              const categoryInfo: { [key: string]: { color: string; icon: string; bgColor: string } } = {
-                electronics: { color: 'from-blue-500 to-cyan-500', icon: '⚡', bgColor: 'bg-blue-50' },
-                'home-decor': { color: 'from-emerald-500 to-green-500', icon: '🏠', bgColor: 'bg-green-50' },
-                jewelery: { color: 'from-pink-500 to-rose-500', icon: '💎', bgColor: 'bg-pink-50' },
-                fashion: { color: 'from-purple-500 to-pink-500', icon: '👗', bgColor: 'bg-purple-50' },
-              };
-
-              const catInfo = categoryInfo[product.categoryPath] || categoryInfo.electronics;
               const categoryImage = categoryImages[product.categoryPath] || categoryImages.electronics;
 
               return (
@@ -107,9 +100,6 @@ export default function Homepage() {
                         e.currentTarget.src = categoryImage;
                       }}
                     />
-                    <div className='absolute top-3 right-3 text-2xl bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md'>
-                      {catInfo.icon}
-                    </div>
                   </div>
 
                   {/* Content Section */}
