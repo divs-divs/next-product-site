@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import { buildCategoryNavLinks, homepageCategories } from '@/lib/categoryConfig';
 import { CartContext } from '@/context/CartContext';
 import largeData from '@/src/mock/large/products.json';
@@ -18,13 +18,7 @@ type Product = {
   countInStock: number;
 };
 
-type CategoryPageProps = {
-  params: {
-    category: string;
-  };
-};
-
-export default function CategoryPage({ params }: CategoryPageProps) {
+export default function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const cartContext = useContext(CartContext) as {
@@ -33,6 +27,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     updateQuantity?: (id: string, quantity: number) => void;
     removeItem?: (id: string) => void;
   };
+  const { category } = React.use(params);
   const cart = cartContext?.cart ?? [];
   const addItem = cartContext?.addItem;
   const updateQuantity = cartContext?.updateQuantity;
@@ -41,8 +36,8 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   const allLocalProducts = [...largeData, ...smallData];
   const navLinks = buildCategoryNavLinks(allLocalProducts);
 
-  const categoryConfig = homepageCategories.find((c) => c.id === params.category);
-  const categoryLabel = categoryConfig?.label || params.category;
+  const categoryConfig = homepageCategories.find((c) => c.id === category);
+  const categoryLabel = categoryConfig?.label || category;
 
   // Map of product IDs to quantities in cart
   const quantityMap = useMemo(
@@ -78,9 +73,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       try {
         // Fetch from API or use local data
         let apiProducts: Product[] = [];
-        apiProducts = allLocalProducts.filter(
-          (product) => product.category.toLowerCase() === params.category.toLowerCase()
-        );
+        apiProducts = allLocalProducts.filter((product) => product.category.toLowerCase() === category.toLowerCase());
         setProducts(apiProducts);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -91,7 +84,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
     };
 
     fetchCategoryProducts();
-  }, [params.category, categoryConfig]);
+  }, [category, categoryConfig]);
 
   return (
     <div className='min-h-screen bg-slate-50'>
@@ -142,30 +135,61 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                     </div>
 
                     <div className='space-y-3 pt-2 border-t border-gray-200'>
-                      <div className='flex items-center gap-3'>
+                      <div className='flex items-center justify-between gap-4'>
                         <button
-                          type='button'
-                          disabled={isOutOfStock || quantity === 0}
-                          onClick={() => handleQuantityChange(product, -1)}
-                          className='h-10 w-10 rounded-full bg-slate-100 text-slate-800 shadow-sm hover:bg-slate-200 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-semibold text-base'
-                          title='Remove from cart'
+                          className='group relative text-gray-700 hover:text-blue-600 transition'
+                          title='Wishlist'
                         >
-                          −
+                          <svg
+                            xmlns='http://www.w3.org/2000/svg'
+                            fill='none'
+                            viewBox='0 0 24 24'
+                            strokeWidth={2}
+                            stroke='currentColor'
+                            className='w-5 h-5'
+                          >
+                            <path
+                              strokeLinecap='round'
+                              strokeLinejoin='round'
+                              d='M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z'
+                            />
+                          </svg>
                         </button>
 
-                        <div className='flex-1 rounded-full bg-slate-100 px-4 py-2 text-center'>
-                          <span className='text-sm font-semibold text-slate-900'>{quantity}</span>
+                        <div className='flex items-center gap-2'>
+                          {/* Minus button */}
+                          <button
+                            type='button'
+                            disabled={isOutOfStock || quantity === 0}
+                            onClick={() => handleQuantityChange(product, -1)}
+                            className='h-8 w-8 rounded-md bg-gray-100 text-gray-700 
+                 flex items-center justify-center font-bold text-lg
+                 shadow-sm hover:bg-gray-200 active:scale-95 
+                 transition disabled:opacity-50 disabled:cursor-not-allowed'
+                            title='Remove from cart'
+                          >
+                            −
+                          </button>
+
+                          {/* Quantity display */}
+                          <div className='min-w-[20px] rounded-md bg-gray-50 px-4 py-1 text-center shadow-sm'>
+                            <span className='text-sm font-semibold text-gray-900'>{quantity}</span>
+                          </div>
+
+                          {/* Plus button */}
+                          <button
+                            type='button'
+                            disabled={isOutOfStock || quantity >= product.countInStock}
+                            onClick={() => handleQuantityChange(product, 1)}
+                            className='h-8 w-8 rounded-md bg-blue-600 text-white 
+               flex items-center justify-center font-bold text-lg
+               shadow-sm hover:bg-blue-700 active:scale-95 
+               transition disabled:opacity-50 disabled:cursor-not-allowed'
+                            title='Add to cart'
+                          >
+                            +
+                          </button>
                         </div>
-
-                        <button
-                          type='button'
-                          disabled={isOutOfStock || quantity >= product.countInStock}
-                          onClick={() => handleQuantityChange(product, 1)}
-                          className='h-10 w-10 rounded-full bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center font-semibold text-base'
-                          title='Add to cart'
-                        >
-                          +
-                        </button>
                       </div>
 
                       {quantity > 0 && (
