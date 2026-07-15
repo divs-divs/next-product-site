@@ -75,7 +75,7 @@ export default function Products() {
                 key={product.id}
                 className='group rounded-lg border border-transparent px-5 py-4 transition-colors bg-gray-100 hover:border-gray-300 hover:bg-gray-400 shadow-sm'
               >
-                <Link href={`/products/${product.id}`}>
+                <Link href={`/category/${encodeURIComponent(product.category.toLowerCase())}`}>
                   <h3 className='mb-3 text-2xl font-semibold'>{product.name}</h3>
                   <p className='m-0 max-w-[30ch] text-sm opacity-50'>Price: {product.price}</p>
                   <p className='m-0 max-w-[30ch] text-sm opacity-50'>Description: {product.description}</p>

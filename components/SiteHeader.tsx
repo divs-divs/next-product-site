@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useContext } from 'react';
 import { CartContext } from '@/context/CartContext';
 import type { SiteNavLink } from '@/lib/categoryConfig';
+import { usePathname } from 'next/navigation';
 
 type Props = {
   links: SiteNavLink[];
@@ -14,6 +15,7 @@ export default function SiteHeader({ links, activeId }: Props) {
   const cartContext = useContext(CartContext);
   const cart = cartContext?.cart || [];
   const totalItems = cart.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0);
+  const params = usePathname();
 
   return (
     <div className='mb-8 relative left-1/2 right-1/2 mx-[-50vw] w-screen bg-white border-b border-gray-100'>
@@ -27,17 +29,21 @@ export default function SiteHeader({ links, activeId }: Props) {
 
         <div className='flex items-center gap-8'>
           <div className='flex items-center gap-6'>
-            {links.map((link) => (
-              <Link
-                key={link.id}
-                href={link.href}
-                className={`text-sm font-semibold transition ${
-                  activeId === link.id ? 'text-blue-600' : 'text-gray-900 hover:text-blue-600'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {links.map((link) => {
+              let pathArray = params ? params.split('/') : '';
+              let activeId = pathArray[pathArray.length - 1];
+              return (
+                <Link
+                  key={link.id}
+                  href={link.href}
+                  className={`text-sm font-semibold transition ${
+                    activeId === link.id ? 'text-blue-600' : 'text-gray-900 hover:text-blue-600'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </div>
 
           <div className='w-px h-5 bg-gray-200' />
